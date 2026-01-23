@@ -39,42 +39,42 @@ This project demonstrates real-world backend development using Go’s standard l
 ## 📌 Folder Responsibilities
 
 ### app/ 
-    - จัดการ dependency injection และรวม handler ทั้งหมดไว้ใน application container
+จัดการ dependency injection และรวม handler ทั้งหมดไว้ใน application container
 ช่วยให้ main.go สะอาดและขยายง่าย
 
 ### handler/
-    - รับ HTTP request / response
+รับ HTTP request / response
 ไม่ทำ business logic โดยตรง
 
 ### service/
-     -ชั้น business logic
+business logic
 ตรวจสอบเงื่อนไขและเรียก repository
 
 ### repository/
-    - ติดต่อฐานข้อมูล (PostgreSQL)
+ติดต่อฐานข้อมูล (PostgreSQL)
 แยก logic DB ออกจาก service
 
 ### middleware/
-    - Authentication (JWT, HMAC), Logging
+Authentication (JWT, HMAC), Logging
 ใช้ http.Handler ตาม Go idiom
 
 ### routes/
-    - แยก public และ protected routes
+แยก public และ protected routes
 wrap middleware อย่างเป็นระบบ
 
 ### model/
-    - struct สำหรับข้อมูล เช่น User
+struct สำหรับข้อมูล เช่น User
 
 ### main.go
-    - bootstrap แอป:
+bootstrap แอป:
 
-        - load env
+- load env
 
-        - connect DB
+- connect DB
 
-        - init app
+- init app
 
-        - start HTTP server
+- start HTTP server
 
 ---
 
