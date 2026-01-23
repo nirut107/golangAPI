@@ -18,6 +18,8 @@ type UserHandler struct {
 // Users handles HTTP requests for user operations
 func (h UserHandler) Users(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	ID := r.Context().Value("userID")
+	_ = ID
 
 	switch r.Method{
 	// Get all users or get user by ID

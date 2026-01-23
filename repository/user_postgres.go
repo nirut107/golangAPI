@@ -20,7 +20,7 @@ func (r PostgresUserRepo) GetAll() ([]model.User, error) {
 	var users []model.User
 	for rows.Next() {
 		var u model.User
-		if err := rows.Scan(&u.ID, &u.Name); err != nil {
+		if err := rows.Scan(&u.ID, &u.Username); err != nil {
 			return nil, err
 		}
 		users = append(users, u)
@@ -31,7 +31,7 @@ func (r PostgresUserRepo) GetAll() ([]model.User, error) {
 
 func (r PostgresUserRepo) GetByID(id int) (model.User, error) {
 	var u model.User
-	err := r.DB.QueryRow(`SELECT id, name FROM users WHERE id = $1`, id).Scan(&u.ID, &u.Name)
+	err := r.DB.QueryRow(`SELECT id, name FROM users WHERE id = $1`, id).Scan(&u.ID, &u.Username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return model.User{}, ErrUserNotFound
@@ -44,7 +44,7 @@ func (r PostgresUserRepo) GetByID(id int) (model.User, error) {
 func (r PostgresUserRepo) Create(u model.User) (model.User, error) {
 	err := r.DB.QueryRow(
 		`INSERT INTO users (name) VALUES ($1) RETURNING id`,
-		u.Name,
+		u.Username,
 	).Scan(&u.ID)
 	if err != nil {
 		return model.User{}, err
@@ -70,7 +70,7 @@ func (r PostgresUserRepo) Delete(id int) error {
 func (r PostgresUserRepo) Update(u model.User) (model.User, error) {
 	result, err := r.DB.Exec(
 		`UPDATE users SET name = $1 WHERE id = $2`,
-		u.Name,
+		u.Username,
 		u.ID,
 	)
 	if err != nil {
@@ -82,6 +82,18 @@ func (r PostgresUserRepo) Update(u model.User) (model.User, error) {
 	}
 	if rowsAffected == 0 {
 		return model.User{}, ErrUserNotFound
+	}
+	return u, nil
+}
+
+func (r PostgresUserRepo) GetByUsername(username string) (model.User, error) {
+	var u model.User
+	err := r.DB.QueryRow(`SELECT id, name, password FROM users WHERE name = $1`, username).Scan(&u.ID, &u.Username, &u.Password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return model.User{}, ErrUserNotFound
+		}
+		return model.User{}, err
 	}
 	return u, nil
 }

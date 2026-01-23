@@ -9,12 +9,14 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
-	"go-backend/middleware"
+	"go-backend/routes"
+
 )
 
 func main() {
-	mux := http.NewServeMux()
+	
 
+	
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
 	}
@@ -27,7 +29,8 @@ func main() {
 	if  err != nil {
 		log.Fatal("failed to connect to database:", err)
 	}
-	userRepo := repository.PostgresUserRepo{DB: db}
+
+	userRepo := repository.NewUserRepoPostgres(db)
 	
 	UserService := service.UserService{
 		Repo: userRepo,
@@ -35,9 +38,18 @@ func main() {
 	UserHandler := handler.UserHandler{
 		Service:  UserService,
 	}
+	LoginHandler := handler.LoginHandler{
+		Service: UserService,
+	}
+	RegisterHandler := handler.RegisterHandler{
+		Service: UserService,
+	}
 
-	mux.HandleFunc("/users", UserHandler.Users)
-	muxWithMiddleware := middleware.LoggingMiddleware(mux)
+	muxWithMiddleware := routes.SetupRoutes(
+		UserHandler,
+		LoginHandler,
+		RegisterHandler,
+	)
 
 	log.Println("server started on :8080")
 	log.Fatal(http.ListenAndServe(":8080", muxWithMiddleware))

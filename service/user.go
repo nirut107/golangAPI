@@ -29,3 +29,7 @@ func (s UserService) Delete(id int) error {
 func (s UserService) Update(u model.User) (model.User, error) {
 	return s.Repo.Update(u)
 }
+
+func (s UserService) GetByUsername(username string) (model.User, error) {
+	return s.Repo.GetByUsername(username)
+}
